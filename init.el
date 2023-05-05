@@ -106,15 +106,15 @@
 ;;Straight as package manager
 (defvar bootstrap-version)
 (let ((bootstrap-file
-   (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
-  (bootstrap-version 6))
+       (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
+      (bootstrap-version 6))
   (unless (file-exists-p bootstrap-file)
     (with-current-buffer
 	(url-retrieve-synchronously
 	 "https://raw.githubusercontent.com/radian-software/straight.el/develop/install.el"
 	 'silent 'inhibit-cookies)
-  (goto-char (point-max))
-  (eval-print-last-sexp)))
+      (goto-char (point-max))
+      (eval-print-last-sexp)))
   (load bootstrap-file nil 'nomessage))
 
 ;; use use-package
@@ -213,7 +213,7 @@
     "H" 'dired-hide-dotfiles-mode))
 
 (use-package savehist
-  :defer t
+  :defer 2
   :config
   (setq history-length 25)
   (savehist-mode 1))
@@ -683,7 +683,7 @@ the user."
 ;;Can't set DONE if children not DONE 
 (setq-default org-enforce-todo-dependencies t)
 
-;;Colors and faces for TODO
+;; Colors and faces for TODO
 (setq org-todo-keyword-faces
       (quote (("TODO" :foreground "red" :weight bold)
               ("NEXT" :foreground "blue" :weight bold)
@@ -697,17 +697,86 @@ the user."
 (setq-default org-export-with-todo-keywords nil)
 
 (use-package org-bullets
-  :straight t
+  :disabled t
   :hook (org-mode . org-bullets-mode)
   :custom
   (org-bullets-bullet-list '("◉" "○" "●" "○" "●" "○" "●")))
+
+(use-package org-superstar)
+
+;; (add-hook 'org-mode-hook (lambda () (org-superstar-mode 1)))
+(with-eval-after-load 'org-superstar
+  (setq org-superstar-item-bullet-alist
+        '((?* . ?•)
+          (?+ . ?➤)
+          (?- . ?•)))
+  (setq org-superstar-headline-bullets-list '(?\d))
+  (setq org-superstar-special-todo-items t)
+  (setq org-superstar-remove-leading-stars t)
+  (setq org-hide-leading-stars t)
+  ;; Enable custom bullets for TODO items
+  (setq org-superstar-todo-bullet-alist
+        '(("TODO" . ?☐)
+          ("NEXT" . ?✒)
+          ("HOLD" . ?✰)
+          ("WAITING" . ?☕)
+          ("CANCELLED" . ?✘)
+          ("DONE" . ?✔)))
+  (org-superstar-restart))
+
+(setq org-ellipsis " ▼ ")
 
 (use-package org-auto-tangle
   :defer t
   :hook (org-mode . org-auto-tangle-mode))
 
+(use-package org-cliplink
+  :after org)
+(global-set-key (kbd "C-x p i") 'org-cliplink)
+
+(defun custom-org-cliplink ()
+  (interactive)
+  (org-cliplink-insert-transformed-title
+   (org-cliplink-clipboard-content)     ;take the URL from the CLIPBOARD
+   (lambda (url title)
+     (let* ((parsed-url (url-generic-parse-url url)) ;parse the url
+            (clean-title
+             (cond
+              ;; if the host is github.com, cleanup the title
+              ((string= (url-host parsed-url) "github.com")
+               (replace-regexp-in-string "GitHub - .*: \\(.*\\)" "\\1" title))
+              ;; otherwise keep the original title
+              (t title))))
+       ;; forward the title to the default org-cliplink transformer
+       (org-cliplink-org-mode-link-transformer url clean-title)))))
+
+(defun insert-url-as-org-link-sparse ()
+  "If there's a URL on the clipboard, insert it as an org-mode
+link in the form of [[url]]."
+  (interactive)
+  (let ((link (substring-no-properties (x-get-selection 'CLIPBOARD)))
+        (url  "\\(http[s]?://\\|www\\.\\)"))
+    (save-match-data
+      (if (string-match url link)
+          (insert (concat "[[" link "]]"))
+        (error "No URL on the clipboard")))))
+
+(defun insert-url-as-org-link-fancy ()
+  "If there's a URL on the clipboard, insert it as an org-mode
+link in the form of [[url][*]], and leave point at *."
+  (interactive)
+  (let ((link (substring-no-properties (x-get-selection 'CLIPBOARD)))
+        (url  "\\(http[s]?://\\|www\\.\\)"))
+    (save-match-data
+      (if (string-match url link)
+          (progn
+            (insert (concat "[[" link "][]]"))
+            (backward-char 2))
+        (error "No URL on the clipboard")))))
+
 (use-package org-modern
   :straight (:build t)
+  :disabled t
   :after org
   :defer t
   :hook (org-mode . org-modern-mode)
@@ -917,7 +986,9 @@ the user."
   :after password-store
   :config
   ;; Make sure it's the only mechanism
-  (setq auth-sources '(password-store)
+  (setq auth-sources '("~/.authinfo"
+                       "~/.authinfo.gpg"
+                       password-store)
         auth-source-gpg-encrypt-to user-mail-address ))
 ;; I like the pass interface, so install that too
 (use-package pass

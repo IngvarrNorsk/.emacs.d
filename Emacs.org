@@ -391,7 +391,7 @@
 
 #+begin_src emacs-lisp
   (use-package savehist
-    :defer t
+    :defer 2
     :config
     (setq history-length 25)
     (savehist-mode 1))
@@ -1008,6 +1008,7 @@
 #+end_src
 
 ** TODO Org-mode
+Настройка =Org-mode=. Частично взято отсюда [[https://hugocisneros.com/org-config/][Org-mode configuration for Emacs - Hugo Cisneros]].
 *** Setting for TODO
 
 #+begin_src emacs-lisp
@@ -1022,7 +1023,7 @@
 *** Colors and faces for TODO
 
 #+begin_src emacs-lisp
-  ;;Colors and faces for TODO
+  ;; Colors and faces for TODO
   (setq org-todo-keyword-faces
         (quote (("TODO" :foreground "red" :weight bold)
                 ("NEXT" :foreground "blue" :weight bold)
@@ -1040,10 +1041,39 @@
 
 #+begin_src emacs-lisp
   (use-package org-bullets
-    :straight t
+    :disabled t
     :hook (org-mode . org-bullets-mode)
     :custom
     (org-bullets-bullet-list '("◉" "○" "●" "○" "●" "○" "●")))
+#+end_src
+
+** Org-superbulets
+
+#+begin_src emacs-lisp
+  (use-package org-superstar)
+
+  ;; (add-hook 'org-mode-hook (lambda () (org-superstar-mode 1)))
+  (with-eval-after-load 'org-superstar
+    (setq org-superstar-item-bullet-alist
+          '((?* . ?•)
+            (?+ . ?➤)
+            (?- . ?•)))
+    (setq org-superstar-headline-bullets-list '(?\d))
+    (setq org-superstar-special-todo-items t)
+    (setq org-superstar-remove-leading-stars t)
+    (setq org-hide-leading-stars t)
+    ;; Enable custom bullets for TODO items
+    (setq org-superstar-todo-bullet-alist
+          '(("TODO" . ?☐)
+            ("NEXT" . ?✒)
+            ("HOLD" . ?✰)
+            ("WAITING" . ?☕)
+            ("CANCELLED" . ?✘)
+            ("DONE" . ?✔)))
+    (org-superstar-restart))
+
+  (setq org-ellipsis " ▼ ")
+
 #+end_src
 
 ** Org-auto-tangle
@@ -1054,15 +1084,68 @@
     :hook (org-mode . org-auto-tangle-mode))
 #+end_src
 
+** Org-cliplink
+
+[[https://github.com/rexim/org-cliplink][GitHub - rexim/org-cliplink: Insert org-mode links from clipboard]] - Инструмент для вставки ссылок прямо из буфера.
+
+[[https://github.com/rexim/org-cliplink][Insert org-mode links from clipboard]] - Данная ссылка вставлена, используя шаблон для Github.
+
+#+begin_src emacs-lisp
+  (use-package org-cliplink
+    :after org)
+  (global-set-key (kbd "C-x p i") 'org-cliplink)
+
+  (defun custom-org-cliplink ()
+    (interactive)
+    (org-cliplink-insert-transformed-title
+     (org-cliplink-clipboard-content)     ;take the URL from the CLIPBOARD
+     (lambda (url title)
+       (let* ((parsed-url (url-generic-parse-url url)) ;parse the url
+              (clean-title
+               (cond
+                ;; if the host is github.com, cleanup the title
+                ((string= (url-host parsed-url) "github.com")
+                 (replace-regexp-in-string "GitHub - .*: \\(.*\\)" "\\1" title))
+                ;; otherwise keep the original title
+                (t title))))
+         ;; forward the title to the default org-cliplink transformer
+         (org-cliplink-org-mode-link-transformer url clean-title)))))
+
+  (defun insert-url-as-org-link-sparse ()
+    "If there's a URL on the clipboard, insert it as an org-mode
+  link in the form of [[url]]."
+    (interactive)
+    (let ((link (substring-no-properties (x-get-selection 'CLIPBOARD)))
+          (url  "\\(http[s]?://\\|www\\.\\)"))
+      (save-match-data
+        (if (string-match url link)
+            (insert (concat "[[" link "]]"))
+          (error "No URL on the clipboard")))))
+
+  (defun insert-url-as-org-link-fancy ()
+    "If there's a URL on the clipboard, insert it as an org-mode
+  link in the form of [[url][*]], and leave point at *."
+    (interactive)
+    (let ((link (substring-no-properties (x-get-selection 'CLIPBOARD)))
+          (url  "\\(http[s]?://\\|www\\.\\)"))
+      (save-match-data
+        (if (string-match url link)
+            (progn
+              (insert (concat "[[" link "][]]"))
+              (backward-char 2))
+          (error "No URL on the clipboard")))))
+#+end_src
+
 ** Org-modern
 
 #+begin_src emacs-lisp
-(use-package org-modern
-  :straight (:build t)
-  :after org
-  :defer t
-  :hook (org-mode . org-modern-mode)
-  :hook (org-agenda-finalize . org-modern-agenda))
+  (use-package org-modern
+    :straight (:build t)
+    :disabled t
+    :after org
+    :defer t
+    :hook (org-mode . org-modern-mode)
+    :hook (org-agenda-finalize . org-modern-agenda))
 #+end_src
 
 ** Org-fancy-priorities
@@ -1345,7 +1428,9 @@
     :after password-store
     :config
     ;; Make sure it's the only mechanism
-    (setq auth-sources '(password-store)
+    (setq auth-sources '("~/.authinfo"
+                         "~/.authinfo.gpg"
+                         password-store)
           auth-source-gpg-encrypt-to user-mail-address ))
   ;; I like the pass interface, so install that too
   (use-package pass

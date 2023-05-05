@@ -3,5 +3,6 @@ data/
 eln-cache/
 logo/
 network-security.data
+secrets.el.gpg
 snippets/
 straight/
