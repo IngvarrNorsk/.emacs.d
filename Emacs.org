@@ -1008,6 +1008,34 @@
 #+end_src
 
 ** TODO Org-mode
+*** Setting for TODO
+
+#+begin_src emacs-lisp
+  ;;Setting up TODO's states
+  (setq org-todo-keywords
+        (quote ((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d)")
+                (sequence "WAITING(w@/!)" "HOLD(h@/!)" "|" "CANCELLED(c@/!)"))))
+  ;;Can't set DONE if children not DONE 
+  (setq-default org-enforce-todo-dependencies t)
+#+end_src
+
+*** Colors and faces for TODO
+
+#+begin_src emacs-lisp
+  ;;Colors and faces for TODO
+  (setq org-todo-keyword-faces
+        (quote (("TODO" :foreground "red" :weight bold)
+                ("NEXT" :foreground "blue" :weight bold)
+                ("DONE" :foreground "forest green" :weight bold)
+                ("WAITING" :foreground "orange" :weight bold)
+                ("HOLD" :foreground "magenta" :weight bold)
+                ("CANCELLED" :foreground "forest green" :weight bold)
+                ("MEETING" :foreground "forest green" :weight bold)
+                ("PHONE" :foreground "forest green" :weight bold))))
+  ;; I don't wan't the keywords in my exports by default
+  (setq-default org-export-with-todo-keywords nil)
+#+end_src
+
 ** Org-bullets
 
 #+begin_src emacs-lisp
