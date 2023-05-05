@@ -811,7 +811,7 @@
   (set-face-attribute 'fixed-pitch nil :font "CaskaydiaCove Nerd Font Mono" :height ingvarr/default-font-size)
   ;; (set-face-attribute 'fixed-pitch nil :font "Cascadia Code" :height ingvarr/default-font-size)
   ;; Set the variable pitch face
-  (set-face-attribute 'variable-pitch nil :font "Caskaydia Cove Nerd" :height ingvarr/default-variable-font-size :weight 'regular)
+  (set-face-attribute 'variable-pitch nil :font "CaskaydiaCove Nerd Font" :height ingvarr/default-variable-font-size :weight 'regular)
   ;; (set-face-attribute 'variable-pitch nil :font "Cascadia Code" :height ingvarr/default-variable-font-size :weight 'regular)
 
 

@@ -106,15 +106,15 @@
 ;;Straight as package manager
 (defvar bootstrap-version)
 (let ((bootstrap-file
-       (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
-      (bootstrap-version 6))
+   (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
+  (bootstrap-version 6))
   (unless (file-exists-p bootstrap-file)
     (with-current-buffer
 	(url-retrieve-synchronously
 	 "https://raw.githubusercontent.com/radian-software/straight.el/develop/install.el"
 	 'silent 'inhibit-cookies)
-      (goto-char (point-max))
-      (eval-print-last-sexp)))
+  (goto-char (point-max))
+  (eval-print-last-sexp)))
   (load bootstrap-file nil 'nomessage))
 
 ;; use use-package
@@ -537,7 +537,7 @@
 (set-face-attribute 'fixed-pitch nil :font "CaskaydiaCove Nerd Font Mono" :height ingvarr/default-font-size)
 ;; (set-face-attribute 'fixed-pitch nil :font "Cascadia Code" :height ingvarr/default-font-size)
 ;; Set the variable pitch face
-(set-face-attribute 'variable-pitch nil :font "Caskaydia Cove Nerd" :height ingvarr/default-variable-font-size :weight 'regular)
+(set-face-attribute 'variable-pitch nil :font "CaskaydiaCove Nerd Font" :height ingvarr/default-variable-font-size :weight 'regular)
 ;; (set-face-attribute 'variable-pitch nil :font "Cascadia Code" :height ingvarr/default-variable-font-size :weight 'regular)
 
 
