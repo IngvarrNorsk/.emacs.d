@@ -1,0 +1,1 @@
+/home/ingvarr/.emacs.d/Emacs.org
