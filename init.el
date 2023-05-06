@@ -997,8 +997,8 @@ link in the form of [[url][*]], and leave point at *."
               (ibuffer-do-sort-by-alphabetic))))
 
 (use-package magit
-  :straight t
   :commands magit-status
+  :after auth-source-pass
   :custom
   (magit-process-find-password-functions '(magit-process-password-auth-source)) 
   (magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1))
@@ -1007,7 +1007,6 @@ link in the form of [[url][*]], and leave point at *."
 ;; - https://magit.vc/manual/forge/Token-Creation.html#Token-Creation
 ;; - https://magit.vc/manual/ghub/Getting-Started.html#Getting-Started
 (use-package forge
-  :straight t
   :after magit)
 
 ;; Use only password-store
