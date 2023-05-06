@@ -310,6 +310,25 @@
 
   (add-to-list 'project-find-functions #'my/project-find-root))
 
+;; Use only password-store
+(use-package password-store)
+;; Auth-Source-Pass
+(use-package auth-source-pass
+  :straight (:type built-in)
+  :init
+  (auth-source-pass-enable)
+  :after password-store
+  :config
+  ;; Make sure it's the only mechanism
+  (setq auth-source-debug t
+        auth-source-gpg-encrypt-to user-mail-address
+        auth-sources '("~/.authinfo"
+                       "~/.authinfo.gpg"
+                       password-store)))
+;; I like the pass interface, so install that too
+(use-package pass
+  :after password-store)
+
 (use-package vertico
   :straight (:files (:defaults "extensions/*"))
   :init (vertico-mode)
@@ -1008,20 +1027,3 @@ link in the form of [[url][*]], and leave point at *."
 ;; - https://magit.vc/manual/ghub/Getting-Started.html#Getting-Started
 (use-package forge
   :after magit)
-
-;; Use only password-store
-(use-package password-store)
-(use-package auth-source-pass
-  :straight (:type built-in)
-  :init
-  (auth-source-pass-enable)
-  :after password-store
-  :config
-  ;; Make sure it's the only mechanism
-  (setq auth-sources '("~/.authinfo"
-                       "~/.authinfo.gpg"
-                       password-store)
-        auth-source-gpg-encrypt-to user-mail-address ))
-;; I like the pass interface, so install that too
-(use-package pass
-  :after password-store)
