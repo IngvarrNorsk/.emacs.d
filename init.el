@@ -1000,6 +1000,7 @@ link in the form of [[url][*]], and leave point at *."
   :straight t
   :commands magit-status
   :custom
+  (magit-process-find-password-functions '(magit-process-password-auth-source)) 
   (magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1))
 
 ;; NOTE: Make sure to configure a GitHub token before using this package!
