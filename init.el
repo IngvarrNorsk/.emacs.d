@@ -696,6 +696,38 @@ the user."
 ;; I don't wan't the keywords in my exports by default
 (setq-default org-export-with-todo-keywords nil)
 
+(defun my/set-general-faces-org ()
+  (my/buffer-face-mode-variable)
+  (setq line-spacing 0.1
+        org-pretty-entities t
+        org-startup-indented t
+        org-adapt-indentation nil)
+  (variable-pitch-mode +1)
+  (mapc
+   (lambda (face) ;; Other fonts that require it are set to fixed-pitch.
+     (set-face-attribute face nil :inherit 'fixed-pitch))
+   (list 'org-block
+         'org-table
+         'org-verbatim
+         'org-block-begin-line
+         'org-block-end-line
+         'org-meta-line
+         'org-date
+         'org-drawer
+         'org-property-value
+         'org-special-keyword
+         'org-document-info-keyword))
+  (mapc ;; This sets the fonts to a smaller size
+   (lambda (face)
+     (set-face-attribute face nil :height 0.8))
+   (list 'org-document-info-keyword
+         'org-block-begin-line
+         'org-block-end-line
+         'org-meta-line
+         'org-drawer
+         'org-property-value
+         )))
+
 (use-package org-bullets
   :disabled t
   :hook (org-mode . org-bullets-mode)

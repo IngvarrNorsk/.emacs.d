@@ -19,9 +19,10 @@
   - [[#turn-on-line-numbers][Turn on Line Numbers]]
   - [[#turn-off-line-numbers][Turn off Line Numbers]]
   - [[#transparency][Transparency]]
-- [[#straight-as-package-manager][Straight as package manager]]
+  - [[#load-secrets][Load Secrets]]
+- [[#package-manager][Package manager]]
   - [[#straight][Straight]]
-  - [[#use-package-by-default][=use-package= by default]]
+  - [[#use-package][Use-package]]
 - [[#base-packages][Base Packages]]
   - [[#async][Async]]
   - [[#ibuffer][iBuffer]]
@@ -46,9 +47,12 @@
   - [[#modeline][Modeline]]
   - [[#dashboard][Dashboard]]
 - [[#org][Org]]
+  - [[#visual-fill][Visual fill]]
   - [[#org-mode][Org-mode]]
   - [[#org-bullets][Org-bullets]]
+  - [[#org-superbulets][Org-superbulets]]
   - [[#org-auto-tangle][Org-auto-tangle]]
+  - [[#org-cliplink][Org-cliplink]]
   - [[#org-modern][Org-modern]]
   - [[#org-fancy-priorities][Org-fancy-priorities]]
   - [[#org-wild-notifier][Org-wild-notifier]]
@@ -67,7 +71,12 @@
   - [[#expend-region][Expend region]]
   - [[#multiple-cursorse][Multiple Cursorse]]
   - [[#rainbow][Rainbow]]
-- [[#tempo][Tempo]]
+  - [[#rainbow-delimiters][Rainbow Delimiters]]
+  - [[#persp][Persp]]
+- [[#magit][Magit]]
+- [[#term][Term]]
+- [[#other][Other]]
+  - [[#pass][Pass]]
 
 * Early Init
 ** Setup up basics
@@ -1035,6 +1044,42 @@
                 ("PHONE" :foreground "forest green" :weight bold))))
   ;; I don't wan't the keywords in my exports by default
   (setq-default org-export-with-todo-keywords nil)
+#+end_src
+
+*** Font setup
+
+#+begin_src emacs-lisp
+(defun my/set-general-faces-org ()
+  (my/buffer-face-mode-variable)
+  (setq line-spacing 0.1
+        org-pretty-entities t
+        org-startup-indented t
+        org-adapt-indentation nil)
+  (variable-pitch-mode +1)
+  (mapc
+   (lambda (face) ;; Other fonts that require it are set to fixed-pitch.
+     (set-face-attribute face nil :inherit 'fixed-pitch))
+   (list 'org-block
+         'org-table
+         'org-verbatim
+         'org-block-begin-line
+         'org-block-end-line
+         'org-meta-line
+         'org-date
+         'org-drawer
+         'org-property-value
+         'org-special-keyword
+         'org-document-info-keyword))
+  (mapc ;; This sets the fonts to a smaller size
+   (lambda (face)
+     (set-face-attribute face nil :height 0.8))
+   (list 'org-document-info-keyword
+         'org-block-begin-line
+         'org-block-end-line
+         'org-meta-line
+         'org-drawer
+         'org-property-value
+         )))
 #+end_src
 
 ** Org-bullets
