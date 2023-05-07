@@ -539,7 +539,7 @@
 
 ;; You will most likely need to adjust this font size for your system!
 (defvar ingvarr/default-font-size 100)
-(defvar ingvarr/default-variable-font-size 100)
+(defvar ingvarr/default-variable-font-size 110)
 
 ;; Font Configuration
 ;;       (set-face-attribute 'default nil :font "JetBrains Mono" :height ingvarr/default-font-size)
@@ -579,19 +579,27 @@
 ;;                       (ingvarr/set-font-faces))))
 ;;         (ingvarr/set-font-faces))
 
-(use-package all-the-icons)
+(use-package nerd-icons
+  ;; :custom
+  ;; The Nerd Font you want to use in GUI
+  ;; "Symbols Nerd Font Mono" is the default and is recommended
+  ;; but you can use any other Nerd Font if you want
+  ;; (nerd-icons-font-family "Symbols Nerd Font Mono")
+  )
 
-(use-package all-the-icons-dired
-  :hook (dired-mode . all-the-icons-dired-mode))
-
-(use-package all-the-icons-ibuffer
-  :after ibuffer
+(use-package nerd-icons-dired
+  :after dired
   :hook
-  (ibuffer-mode . all-the-icons-ibuffer-mode))
+  (dired-mode . nerd-icons-dired-mode))
 
-(use-package all-the-icons-completion
-:after (marginalia all-the-icons)
-:hook (marginalia-mode . all-the-icons-completion-marginalia-setup))
+(use-package nerd-icons-ibuffer
+  :after ibuffer
+  :hook (ibuffer-mode . nerd-icons-ibuffer-mode))
+
+(use-package nerd-icons-completion
+  :after (marginalia all-the-icons)
+  :config
+  (nerd-icons-completion-mode))
 
 (use-package doom-themes)
 
@@ -607,7 +615,7 @@
 
 (use-package doom-modeline
   :init (doom-modeline-mode 1)
-  :custom ((doom-modeline-height 25)))
+  :custom ((doom-modeline-height 35)))
 
 (use-package fancy-battery
 :disabled t
@@ -643,6 +651,8 @@ the user."
 (use-package dashboard
   ;; :after page-break-lines projectile
   :init      ;; tweak dashboard config before loading it
+  (setq dashboard-display-icons-p t) ;; display icons on both GUI and terminal
+  (setq dashboard-icon-type 'nerd-icons) ;; use `nerd-icons' package
   (setq dashboard-set-heading-icons t)
   (setq dashboard-set-file-icons t)
   (setq dashboard-set-init-info t)
@@ -661,14 +671,14 @@ the user."
                           ))
   ;; (setq dashboard-page-seperator "\n\f\n")
   (setq dashboard-footer-messages '("Richard Stallman is proud you!"))
-  (setq dashboard-footer-icon (all-the-icons-fileicon "emacs"
-                                                      :height 1.1
-                                                      :v-adjust -0.05
-                                                      :face 'font-lock-keyword-face))
+  (setq dashboard-footer-icon (nerd-icons-sucicon "nf-custom-emacs"
+                                                  :height 1.1
+                                                  :v-adjust -0.05
+                                                  :face 'font-lock-keyword-face))
   :config
   (dashboard-setup-startup-hook)
-  (dashboard-modify-heading-icons '((recents . "file-text")
-                                    (bookmarks . "book")))
+  (dashboard-modify-heading-icons '((recents . "nf-oct-file_text")
+                                    (bookmarks . "nf-oct-book")))
   (setq initial-buffer-choice (lambda () (get-buffer-create "*dashboard*"))))
 ;; (add-to-list 'dashboard-items '(agenda) t)
 
@@ -738,7 +748,7 @@ the user."
          'org-document-info-keyword))
   (mapc ;; This sets the fonts to a smaller size
    (lambda (face)
-     (set-face-attribute face nil :height 0.8))
+     (set-face-attribute face nil :height 1.1))
    (list 'org-document-info-keyword
          'org-block-begin-line
          'org-block-end-line
@@ -835,6 +845,7 @@ link in the form of [[url][*]], and leave point at *."
 
 (use-package org-fancy-priorities
   :after (org all-the-icons)
+  :disabled t
   :straight (:build t)
   :hook (org-mode        . org-fancy-priorities-mode)
   :hook (org-agenda-mode . org-fancy-priorities-mode)
@@ -1018,8 +1029,9 @@ link in the form of [[url][*]], and leave point at *."
 (use-package magit
   :commands magit-status
   :after auth-source-pass
+  :hook (magit-process-find-password-functions . magit-process-password-auth-source)
   :custom
-  (magit-process-find-password-functions '(magit-process-password-auth-source)) 
+  ;; (magit-process-find-password-functions '(magit-process-password-auth-source)) 
   (magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1))
 
 ;; NOTE: Make sure to configure a GitHub token before using this package!
